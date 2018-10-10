@@ -1,6 +1,9 @@
 package com.xy.ecommerce.dao;
 
 import com.xy.ecommerce.entity.Cart;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface CartMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface CartMapper {
     int updateByPrimaryKeySelective(Cart record);
 
     int updateByPrimaryKey(Cart record);
+
+    Cart selectCartByUserIdProductId(@Param("userId") Integer userId, @Param("productId")Integer productId);
+
+    List<Cart> selectCartByUserId(Integer productId);
 }

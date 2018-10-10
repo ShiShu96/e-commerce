@@ -17,4 +17,8 @@ public class Const {
     public static final int PRODUCT_STATUS_SOLD_OUT=2;
 
     public static final int PRODUCT_STATUS_DELETED=3;
+
+    public static final int CART_CHECKED=1;
+
+    public static final int CART_UNCHECKED=0;
 }
