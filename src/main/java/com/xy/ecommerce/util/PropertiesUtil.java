@@ -13,7 +13,7 @@ public class PropertiesUtil {
     private static Properties properties;
 
     static {
-        String filename="ecommerce-properties";
+        String filename="ecommerce.properties";
 
         properties=new Properties();
         try {

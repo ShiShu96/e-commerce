@@ -124,11 +124,11 @@ public class ProductServiceImpl implements ProductService {
         productDetailVo.setStatus(product.getStatus());
         productDetailVo.setStock(product.getStock());
 
-        productDetailVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix","http://img.ecommerce.com/"));
+        productDetailVo.setImageHost(PropertiesUtil.getProperty("ftp.server.prefix","http://img.ecommerce.com/"));
 
         Category category = categoryMapper.selectByPrimaryKey(product.getCategoryId());
         if(category == null){
-            productDetailVo.setParentCategoryId(0);//默认根节点
+            productDetailVo.setParentCategoryId(0);
         }else{
             productDetailVo.setParentCategoryId(category.getParentId());
         }

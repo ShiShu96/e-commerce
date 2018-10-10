@@ -6,16 +6,22 @@ import com.xy.ecommerce.common.Response;
 import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.entity.Product;
 import com.xy.ecommerce.entity.User;
+import com.xy.ecommerce.service.FileService;
 import com.xy.ecommerce.service.ProductService;
+import com.xy.ecommerce.util.PropertiesUtil;
 import com.xy.ecommerce.vo.ProductDetailVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/backend/product/")
@@ -23,6 +29,9 @@ public class BackendProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private FileService fileService;
 
     @RequestMapping(value = "save.do")
     public Response productSave(Product product, HttpSession session){
@@ -62,6 +71,21 @@ public class BackendProductController {
         if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
         if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         return productService.searchProduct(productName, productId);
+    }
+
+    @RequestMapping(value = "upload.do", method = RequestMethod.POST)
+    public Response<Map<String, String>> upload(MultipartFile file, HttpSession session){
+        User user=(User) session.getAttribute(Const.CURRENT_USER);
+        if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
+        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
+        String path=session.getServletContext().getRealPath("upload");
+        String targetFileName=fileService.upload(file, path);
+        String url=PropertiesUtil.getProperty("ftp.server.prefix")+targetFileName;
+
+        Map<String, String> map=new HashMap<>();
+        map.put("fileName", targetFileName);
+        map.put("url", url);
+        return Response.createBySuccess(map);
     }
 
 }

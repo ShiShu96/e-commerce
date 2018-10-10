@@ -1,11 +1,11 @@
 package com.xy.ecommerce.util;
 
-import java.security.MessageDigest;;
+import java.security.MessageDigest;
 
 public class MD5Util {
 
     private static String byteArrayToHexString(byte b[]) {
-        StringBuffer resultSb = new StringBuffer();
+        StringBuilder resultSb = new StringBuilder();
         for (int i = 0; i < b.length; i++)
             resultSb.append(byteToHexString(b[i]));
 
@@ -22,7 +22,7 @@ public class MD5Util {
     }
 
     /**
-     * 返回大写MD5
+     * uppercase MD5
      *
      * @param origin
      * @param charsetname
