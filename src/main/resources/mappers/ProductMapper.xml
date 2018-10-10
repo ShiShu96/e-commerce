@@ -156,4 +156,25 @@
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from ecommerce_product
+    order by id asc
+  </select>
+
+  <select id="selectByNameAndId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from ecommerce_product
+    <where>
+      <if test="productName != null">
+          name like #{productName}
+      </if>
+      <if test="productId != null">
+         and id = #{productId}
+      </if>
+    </where>
+  </select>
 </mapper>

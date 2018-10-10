@@ -26,16 +26,16 @@ public class BackendCategoryController {
     @RequestMapping(value = "add_category.do", method = RequestMethod.POST)
     public Response addCategory(String categoryName, @RequestParam(value = "parentId", defaultValue = "0") int parentId, HttpSession session){
         User user=(User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null) return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
-        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByErrorMessage("not authorized operation");
+        if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
+        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         return categoryService.addCategory(categoryName, parentId);
     }
 
     @RequestMapping(value = "update_category_name.do", method = RequestMethod.POST)
     public Response updateCategoryName(int categoryId,String categoryName, HttpSession session){
         User user=(User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null) return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
-        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByErrorMessage("not authorized operation");
+        if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
+        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         // modify category name
         return categoryService.updateCategoryName(categoryId, categoryName);
     }
@@ -43,8 +43,8 @@ public class BackendCategoryController {
     @RequestMapping(value = "get_parallel_category.do", method = RequestMethod.GET)
     public Response<List<Category>> getParallelChildrenCategory(@RequestParam(value="categoryId", defaultValue = "0") int parentId, HttpSession session){
         User user=(User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null) return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
-        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByErrorMessage("not authorized operation");
+        if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
+        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         // query parallel children categories
         return categoryService.getParallelChildrenCategory(parentId);
     }
@@ -52,8 +52,8 @@ public class BackendCategoryController {
     @RequestMapping(value = "get_deep_category.do", method = RequestMethod.GET)
     public Response<Set<Category>> getDeepChildrenCategory(@RequestParam(value="categoryId", defaultValue = "0") int id, HttpSession session){
         User user=(User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null) return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
-        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByErrorMessage("not authorized operation");
+        if (user==null) return Response.createByError(ResponseCode.NEED_LOGIN);
+        if (user.getRole()!=Const.ROLE_ADMIN) return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         // query all children categories
         return categoryService.getCategoryWithChildren(id);
     }

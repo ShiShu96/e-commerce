@@ -2,6 +2,7 @@ package com.xy.ecommerce.controller.backend;
 
 import com.xy.ecommerce.common.Const;
 import com.xy.ecommerce.common.Response;
+import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.entity.User;
 import com.xy.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class BackendUserController {
             if (user.getRole()==Const.ROLE_ADMIN){
                 session.setAttribute(Const.CURRENT_USER, user);
             } else {
-                return Response.createByErrorMessage("user is not administrator");
+                return Response.createByError(ResponseCode.NOT_AUTHORIZED);
             }
         }
 

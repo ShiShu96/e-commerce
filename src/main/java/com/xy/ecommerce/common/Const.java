@@ -11,4 +11,10 @@ public class Const {
     public static final String EMAIL="email";
 
     public static final String USERNAME="username";
+
+    public static final int PRODUCT_STATUS_SELLING=1;
+
+    public static final int PRODUCT_STATUS_SOLD_OUT=2;
+
+    public static final int PRODUCT_STATUS_DELETED=3;
 }

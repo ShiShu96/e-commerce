@@ -50,7 +50,7 @@ public class UserController {
         if(user!=null){
             return Response.createBySuccess();
         }
-        return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
+        return Response.createByError(ResponseCode.NEED_LOGIN);
     }
 
     @RequestMapping(value = "get_question.do",method = RequestMethod.GET)
@@ -72,7 +72,7 @@ public class UserController {
     public Response<User> update_information(User user, HttpSession session){
         User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
         if(currentUser == null){
-            return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "user not logged in");
+            return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         user.setId(currentUser.getId());
         user.setUsername(currentUser.getUsername());
@@ -88,7 +88,7 @@ public class UserController {
     public Response<User> get_information(HttpSession session){
         User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
         if(currentUser == null){
-            return Response.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"user not logged in");
+            return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return userService.getInformation(currentUser.getId());
     }

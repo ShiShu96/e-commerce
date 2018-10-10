@@ -15,7 +15,7 @@ public interface UserService {
 
     Response<String> checkAnswer(String username, String question, String answer);
 
-    Response<String> resetPassword(String username,String newPassword,String token);
+    Response<String> resetPassword(String username,String newPassword, String token);
 
     Response<User> updateInformation(User user);
 

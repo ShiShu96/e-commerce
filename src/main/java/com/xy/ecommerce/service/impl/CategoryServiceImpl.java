@@ -1,6 +1,7 @@
 package com.xy.ecommerce.service.impl;
 
 import com.xy.ecommerce.common.Response;
+import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.dao.CategoryMapper;
 import com.xy.ecommerce.entity.Category;
 import com.xy.ecommerce.service.CategoryService;
@@ -22,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Response addCategory(String categoryName, Integer parentId){
         if (StringUtils.isEmpty(categoryName.trim()) || parentId==null){
-            return Response.createByErrorMessage("invalid parameter for a category");
+            return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
         }
         Category category=new Category();
         category.setName(categoryName);
@@ -30,16 +31,16 @@ public class CategoryServiceImpl implements CategoryService {
 
         int count=categoryMapper.insert(category);
         if (count>0){
-            return Response.createBySuccessMessage("added a category successfully");
+            return Response.createBySuccess();
         }
 
-        return Response.createByErrorMessage("failed to add a category");
+        return Response.createByError();
     }
 
     @Override
     public Response updateCategoryName(Integer categoryId, String categoryName){
         if (StringUtils.isEmpty(categoryName.trim()) || categoryId==null){
-            return Response.createByErrorMessage("invalid parameter for a category");
+            return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
         }
         Category category=new Category();
         category.setId(categoryId);
@@ -47,17 +48,17 @@ public class CategoryServiceImpl implements CategoryService {
 
         int count=categoryMapper.updateByPrimaryKeySelective(category);
         if (count>0){
-            return Response.createBySuccessMessage("updated the category name successfully");
+            return Response.createBySuccess();
         }
 
-        return Response.createByErrorMessage("failed to update the category name");
+        return Response.createByError();
     }
 
     @Override
     public Response<List<Category>> getParallelChildrenCategory(int parentId){
         List<Category> categorieList=categoryMapper.selectParallelChildreCategoryByParentId(parentId);
         if (CollectionUtils.isEmpty(categorieList))
-            return Response.createByErrorMessage("categories not found");
+            return Response.createByError();
         return Response.createBySuccess(categorieList);
     }
 
