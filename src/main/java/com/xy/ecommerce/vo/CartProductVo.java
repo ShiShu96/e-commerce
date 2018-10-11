@@ -13,12 +13,11 @@ public class CartProductVo {
     private String productSubtitle;
     private String productMainImage;
     private BigDecimal productPrice;
-    private String productStatus;
+    private Integer productStatus;
     private BigDecimal productTotalPrice;
     private Integer productStock;
     private Integer productChecked;
 
-    private Integer limitQuantity;
 
     public Integer getId() {
         return id;
@@ -84,11 +83,11 @@ public class CartProductVo {
         this.productPrice = productPrice;
     }
 
-    public String getProductStatus() {
+    public Integer getProductStatus() {
         return productStatus;
     }
 
-    public void setProductStatus(String productStatus) {
+    public void setProductStatus(Integer productStatus) {
         this.productStatus = productStatus;
     }
 
@@ -116,11 +115,4 @@ public class CartProductVo {
         this.productChecked = productChecked;
     }
 
-    public Integer getLimitQuantity() {
-        return limitQuantity;
-    }
-
-    public void setLimitQuantity(Integer limitQuantity) {
-        this.limitQuantity = limitQuantity;
-    }
 }

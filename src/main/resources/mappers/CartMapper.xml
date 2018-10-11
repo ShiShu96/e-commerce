@@ -98,7 +98,7 @@
   <select id="selectCartByUserIdProductId" resultMap="BaseResultMap" parameterType="map">
     SELECT
     <include refid="Base_Column_List"/>
-    from mmall_cart
+    from ecommerce_cart
     where user_id = #{userId}
     and product_id = #{productId}
   </select>
@@ -106,7 +106,31 @@
   <select id="selectCartByUserId" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List"/>
-    from mmall_cart
+    from ecommerce_cart
     where user_id = #{userId}
   </select>
+
+  <select id="selectCartProductCheckedStatusByUserId">
+    SELECT  count(1) from ecommerce_cart where checked = 0 and user_id = #{userId}
+  </select>
+
+  <delete id="deleteByUserIdProductIds">
+    delete from ecommerce_cart
+    where user_id=#{userId}
+    <if test="productIds != null">
+      and product_id in
+      <foreach collection="productIds" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </delete>
+
+  <update id="checkUncheckProduct">
+    update ecommerce_cart
+    set checked = #{checked}
+    where user_id=#{userId}
+    <if test="productId != null">
+      and product_id=#{productId}
+    </if>
+  </update>
 </mapper>
