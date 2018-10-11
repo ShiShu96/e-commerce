@@ -6,6 +6,7 @@
 <configuration>
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
     </settings>
     <typeAliases>
         <package name="com.xy.ecommerce.entity"/>
