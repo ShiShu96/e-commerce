@@ -6,6 +6,7 @@ package com.xy.ecommerce.common;
 public enum ResponseCode {
     SUCCESS(0,"SUCCESS"),
     ERROR(1,"ERROR"),
+    DATABASE_ERROR(2,"DATABASE ERROR"),
     //...
     ILLEGAL_ARGUMENT(101,"ILLEGAL ARGUMENT"),
     //...

@@ -14,6 +14,7 @@ import com.xy.ecommerce.vo.OrderVo;
 import com.xy.ecommerce.vo.ShippingVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -36,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private ShippingMapper shippingMapper;
 
     @Override
+    @Transactional
     public Response<OrderVo> createOrder(Integer userId, Integer shippingId) {
         List<Cart> cartList=cartMapper.selectCheckedCartByUserId(userId);
         // calculate total price
@@ -49,51 +51,61 @@ public class OrderServiceImpl implements OrderService {
         // create order
         Order order=assembleOrder(userId, shippingId, payment);
 
-        // insert into the database
-        int count=orderMapper.insert(order);
-        if(count<=0){
-            return Response.createByError();
+        try {
+            // insert into the database
+            int count = orderMapper.insert(order);
+            if (count <= 0) {
+                throw new Exception();
+            }
+            for (OrderItem item : orderItemList) {
+                item.setOrderNo(order.getOrderNo());
+            }
+
+            // bunch insert
+            orderItemMapper.batchInsert(orderItemList);
+
+            // reduce stock
+            reduceProductStock(orderItemList);
+
+            // clear cart
+            cleanCart(cartList);
+        } catch (Exception e){
+            return Response.createByError(ResponseCode.DATABASE_ERROR);
         }
-        for (OrderItem item:orderItemList){
-            item.setOrderNo(order.getOrderNo());
-        }
-
-        // bunch insert
-        orderItemMapper.batchInsert(orderItemList);
-
-        // reduce stock
-        reduceProductStock(orderItemList);
-
-        // clear cart
-        cleanCart(cartList);
-
         OrderVo orderVo=assembleOrderVo(order, orderItemList);
 
         return Response.createBySuccess(orderVo);
     }
 
     @Override
+    @Transactional
     public Response cancelOrder(Integer userId, Long orderNo){
         Order order=orderMapper.selectByUserIdAndOrderNo(userId, orderNo);
         if (order==null || order.getStatus()==Const.ORDER_CANCELLED){
             return Response.createByError(ResponseCode.ORDER_NOT_EXISTS);
         }
-        Order upddateOrder=new Order();
-        upddateOrder.setId(order.getId());
-        upddateOrder.setStatus(Const.ORDER_CANCELLED);
 
-        List<OrderItem> orderItemList=orderItemMapper.selectByOrderNo(orderNo);
-        for (OrderItem item:orderItemList){
-            Product product=productMapper.selectByPrimaryKey(item.getProductId());
-            product.setStock(product.getStock()+item.getQuantity());
-            productMapper.updateByPrimaryKeySelective(product);
+        try{
+            Order upddateOrder=new Order();
+            upddateOrder.setId(order.getId());
+            upddateOrder.setStatus(Const.ORDER_CANCELLED);
+
+            int count=orderMapper.updateByPrimaryKeySelective(upddateOrder);
+            if (count<=0){
+                throw new Exception();
+            }
+
+            List<OrderItem> orderItemList=orderItemMapper.selectByOrderNo(orderNo);
+            for (OrderItem item:orderItemList){
+                Product product=productMapper.selectByPrimaryKey(item.getProductId());
+                product.setStock(product.getStock()+item.getQuantity());
+                productMapper.updateByPrimaryKeySelective(product);
+            }
+        } catch (Exception e){
+            return Response.createByError(ResponseCode.DATABASE_ERROR);
         }
 
-        int count=orderMapper.updateByPrimaryKeySelective(upddateOrder);
-        if (count>0){
-            return Response.createBySuccess();
-        }
-        return Response.createByError();
+        return Response.createBySuccess();
     }
 
     @Override
@@ -176,10 +188,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private void reduceProductStock(List<OrderItem> orderItemList) {
+    private void reduceProductStock(List<OrderItem> orderItemList) throws Exception{
         for(OrderItem orderItem : orderItemList){
             Product product = productMapper.selectByPrimaryKey(orderItem.getProductId());
             product.setStock(product.getStock()-orderItem.getQuantity());
+            if (product.getStock()<0){
+                throw new Exception();
+            }
             productMapper.updateByPrimaryKeySelective(product);
         }
     }

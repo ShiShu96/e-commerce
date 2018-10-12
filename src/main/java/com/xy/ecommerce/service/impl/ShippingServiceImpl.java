@@ -19,6 +19,7 @@ public class ShippingServiceImpl implements ShippingService {
     @Autowired
     private ShippingMapper shippingMapper;
 
+    @Override
     public Response add(Integer userId, Shipping shipping){
         if (shipping==null){
             return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
@@ -31,6 +32,7 @@ public class ShippingServiceImpl implements ShippingService {
         return Response.createByError();
     }
 
+    @Override
     public Response delete(Integer userId,Integer shippingId){
         if (shippingId==null){
             return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
@@ -42,6 +44,7 @@ public class ShippingServiceImpl implements ShippingService {
         return Response.createByError();
     }
 
+    @Override
     public Response update(Integer userId, Shipping shipping){
         if (shipping==null){
             return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
@@ -54,6 +57,7 @@ public class ShippingServiceImpl implements ShippingService {
         return Response.createByError();
     }
 
+    @Override
     public Response<Shipping> select(Integer userId, Integer shippingId){
         if (shippingId==null){
             return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
@@ -65,6 +69,7 @@ public class ShippingServiceImpl implements ShippingService {
         return Response.createByError();
     }
 
+    @Override
     public Response<PageInfo> list(Integer userId, int pageNum, int pageSize){
         PageHelper.startPage(pageNum, pageSize);
         List<Shipping> shippingList=shippingMapper.selectByUserId(userId);

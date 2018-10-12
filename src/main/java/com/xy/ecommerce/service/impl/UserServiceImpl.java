@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
         if(updateCount > 0){
             return Response.createBySuccess(updateUser);
         }
-        return Response.createByError();
+        return Response.createByError(ResponseCode.DATABASE_ERROR);
     }
 
     @Override
