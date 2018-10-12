@@ -177,4 +177,18 @@
       close_time = #{closeTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByUserIdAndOrderNo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from ecommerce_order
+    where user_id = #{userId} and order_no=#{orderNo}
+  </select>
+
+  <select id="selectByOrderNo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from ecommerce_order
+    where order_no=#{orderNo}
+  </select>
+
 </mapper>

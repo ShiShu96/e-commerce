@@ -1,9 +1,11 @@
 package com.xy.ecommerce.dao;
 
 import com.xy.ecommerce.entity.Category;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+@Mapper
 public interface CategoryMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -17,5 +19,5 @@ public interface CategoryMapper {
 
     int updateByPrimaryKey(Category record);
 
-    List<Category> selectParallelChildreCategoryByParentId(Integer id);
+    List<Category> selectParallelChildrenCategoryByParentId(Integer id);
 }

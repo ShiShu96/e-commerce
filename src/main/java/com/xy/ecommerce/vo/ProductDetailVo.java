@@ -19,9 +19,6 @@ public class ProductDetailVo {
     private Integer status;
     private String createTime;
     private String updateTime;
-
-
-    private String imageHost;
     private Integer parentCategoryId;
 
     public Integer getId() {
@@ -118,14 +115,6 @@ public class ProductDetailVo {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public String getImageHost() {
-        return imageHost;
-    }
-
-    public void setImageHost(String imageHost) {
-        this.imageHost = imageHost;
     }
 
     public Integer getParentCategoryId() {

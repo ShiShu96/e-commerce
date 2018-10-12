@@ -26,6 +26,8 @@ public class FTPUtil {
     private String pwd;
     private FTPClient ftpClient;
 
+    private static final String REOMOTE_PATH="img";
+
     public FTPUtil(String ip, int port, String user, String pwd) {
         this.ip = ip;
         this.port = port;
@@ -36,7 +38,7 @@ public class FTPUtil {
     public static boolean uploadFile(List<File> fileList) throws  IOException{
         FTPUtil ftpUtil = new FTPUtil(ftpIp,ftpPort,ftpUser, ftpPwd);
         logger.info("connecting ftp server");
-        boolean result = ftpUtil.uploadFile("img",fileList);
+        boolean result = ftpUtil.uploadFile(REOMOTE_PATH,fileList);
         logger.info("uploaded");
         return result;
     }

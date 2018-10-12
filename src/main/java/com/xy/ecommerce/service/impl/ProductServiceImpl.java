@@ -111,6 +111,7 @@ public class ProductServiceImpl implements ProductService {
         return Response.createBySuccess(list);
     }
 
+
     private ProductDetailVo assembleProductDetailVo(Product product){
         ProductDetailVo productDetailVo = new ProductDetailVo();
         productDetailVo.setId(product.getId());
@@ -124,7 +125,6 @@ public class ProductServiceImpl implements ProductService {
         productDetailVo.setStatus(product.getStatus());
         productDetailVo.setStock(product.getStock());
 
-        productDetailVo.setImageHost(PropertiesUtil.getProperty("ftp.server.prefix","http://img.ecommerce.com/"));
 
         Category category = categoryMapper.selectByPrimaryKey(product.getCategoryId());
         if(category == null){

@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setName(categoryName);
         category.setParentId(parentId);
 
-        int count=categoryMapper.insert(category);
+        int count=categoryMapper.insertSelective(category);
         if (count>0){
             return Response.createBySuccess();
         }
@@ -56,13 +56,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Response<List<Category>> getParallelChildrenCategory(int parentId){
-        List<Category> categorieList=categoryMapper.selectParallelChildreCategoryByParentId(parentId);
-        if (CollectionUtils.isEmpty(categorieList))
+        List<Category> categoryList=categoryMapper.selectParallelChildrenCategoryByParentId(parentId);
+        if (CollectionUtils.isEmpty(categoryList))
             return Response.createByError();
-        return Response.createBySuccess(categorieList);
+        return Response.createBySuccess(categoryList);
     }
 
-        @Override
+    @Override
     public Response getCategoryWithChildren(int id){
         Set<Category> categorySet=new HashSet<>();
         findChildrenCategory(categorySet, id);
@@ -75,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
             categorySet.add(category);
         }
         // recursively search children nodes
-        List<Category> categoryList=categoryMapper.selectParallelChildreCategoryByParentId(id);
+        List<Category> categoryList=categoryMapper.selectParallelChildrenCategoryByParentId(id);
         for (Category child:categoryList){
             findChildrenCategory(categorySet, child.getId());
         }

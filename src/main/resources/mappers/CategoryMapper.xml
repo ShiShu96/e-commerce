@@ -95,10 +95,10 @@
           sort_order = #{sortOrder,jdbcType=INTEGER}
         where id = #{id,jdbcType=INTEGER}
       </update>
-    <select id="selectParallelChildreCategoryByParentId" resultMap="BaseResultMap">
+    <select id="selectParallelChildrenCategoryByParentId" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
       from ecommerce_category
-      where parend_id=#{id}
+      where parent_id=#{id}
     </select>
 </mapper>

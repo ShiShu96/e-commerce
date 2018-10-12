@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -18,6 +19,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     public Response<User> login(String username, String password, HttpSession httpSession){
@@ -48,7 +52,8 @@ public class UserController {
     public Response<User> getUserInfo(HttpSession session){
         User user=(User) session.getAttribute(Const.CURRENT_USER);
         if(user!=null){
-            return Response.createBySuccess();
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return Response.createBySuccess(user);
         }
         return Response.createByError(ResponseCode.NEED_LOGIN);
     }
@@ -72,6 +77,7 @@ public class UserController {
     public Response<User> update_information(User user, HttpSession session){
         User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
         if(currentUser == null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         user.setId(currentUser.getId());
@@ -80,16 +86,10 @@ public class UserController {
         if(response.isSuccess()){
             response.getData().setUsername(currentUser.getUsername());
             session.setAttribute(Const.CURRENT_USER,response.getData());
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
         return response;
     }
 
-    @RequestMapping(value = "get_information.do",method = RequestMethod.GET)
-    public Response<User> get_information(HttpSession session){
-        User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
-        if(currentUser == null){
-            return Response.createByError(ResponseCode.NEED_LOGIN);
-        }
-        return userService.getInformation(currentUser.getId());
-    }
 }

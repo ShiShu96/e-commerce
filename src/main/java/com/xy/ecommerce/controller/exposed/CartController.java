@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -20,10 +21,14 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private HttpServletResponse httpServletResponse;
+
     @RequestMapping(value = "add.do", method = RequestMethod.POST)
     public Response<CartVo> add(Integer count, Integer productId, HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.add(user.getId(),productId,count);
@@ -33,6 +38,7 @@ public class CartController {
     public Response<CartVo> list(HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.list(user.getId());
@@ -42,6 +48,7 @@ public class CartController {
     public Response<CartVo> update(Integer count, Integer productId, HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.update(user.getId(),productId,count);
@@ -51,6 +58,7 @@ public class CartController {
     public Response<CartVo> delete(String productIds, HttpSession session ){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.delete(user.getId(), productIds);
@@ -60,6 +68,7 @@ public class CartController {
     public Response<CartVo> select(Integer productId, HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.selectUnSelect(user.getId(), Const.CART_CHECKED, productId);
@@ -69,6 +78,7 @@ public class CartController {
     public Response<CartVo> unSelect(Integer productId, HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.selectUnSelect(user.getId(), Const.CART_UNCHECKED, productId);
@@ -78,6 +88,7 @@ public class CartController {
     public Response<CartVo> selectAll(HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.selectUnSelect(user.getId(), Const.CART_CHECKED, null);
@@ -87,6 +98,7 @@ public class CartController {
     public Response<CartVo> unSelectAll(HttpSession session){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return cartService.selectUnSelect(user.getId(), Const.CART_UNCHECKED, null);

@@ -1,10 +1,12 @@
 package com.xy.ecommerce.dao;
 
 import com.xy.ecommerce.entity.Shipping;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface ShippingMapper {
     int deleteByPrimaryKey(Integer id);
 

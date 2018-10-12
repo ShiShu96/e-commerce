@@ -33,8 +33,8 @@ public class FileServiceImpl implements FileService {
 
         try {
             file.transferTo(targetFile);
-            FTPUtil.uploadFile(Lists.newArrayList(targetFile));
-            targetFile.delete();
+//            FTPUtil.uploadFile(Lists.newArrayList(targetFile));
+//            targetFile.delete();
         }catch (IOException e){
             logger.error(e.getMessage());
         }

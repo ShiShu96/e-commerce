@@ -9,7 +9,6 @@ import com.xy.ecommerce.entity.Cart;
 import com.xy.ecommerce.entity.Product;
 import com.xy.ecommerce.service.CartService;
 import com.xy.ecommerce.util.BigDecimalUtil;
-import com.xy.ecommerce.util.PropertiesUtil;
 import com.xy.ecommerce.vo.CartProductVo;
 import com.xy.ecommerce.vo.CartVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,9 +135,8 @@ public class CartServiceImpl implements CartService {
         cartVo.setCartProductVoList(cartProductVoList);
         cartVo.setCartTotalPrice(cartTotalPrice);
         cartVo.setAllChecked(getAllCheckedStatus(userId));
-        cartVo.setImageHost(PropertiesUtil.getProperty("ftp.server.prefix"));
 
-        return null;
+        return cartVo;
     }
 
     private boolean getAllCheckedStatus(Integer userId){

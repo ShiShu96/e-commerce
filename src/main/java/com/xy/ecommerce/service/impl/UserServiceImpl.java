@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response resetPassword(String username,String newPassword,String token){
         if(StringUtils.isEmpty(token)){
-            return Response.createByError(ResponseCode.EMAIL_TAKEN);
+            return Response.createByError(ResponseCode.EMPTY_TOKEN);
         }
         Response response = this.checkNotExist(username,Const.USERNAME);
         if(response.isSuccess()) return Response.createByError(ResponseCode.USER_NOT_FOUND);

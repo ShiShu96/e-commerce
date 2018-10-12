@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -21,10 +22,14 @@ public class ShippingController {
     @Autowired
     private ShippingService shippingService;
 
+    @Autowired
+    private HttpServletResponse response;
+
     @RequestMapping(value = "add.do", method = RequestMethod.POST)
     public Response add(Shipping shipping, HttpSession session){
         User user=(User)session.getAttribute(Const.CURRENT_USER);
         if (user==null){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return shippingService.add(user.getId(), shipping);
@@ -34,6 +39,7 @@ public class ShippingController {
     public Response delete(Integer shippingId, HttpSession session){
         User user=(User)session.getAttribute(Const.CURRENT_USER);
         if (user==null){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return shippingService.delete(user.getId(), shippingId);
@@ -43,6 +49,7 @@ public class ShippingController {
     public Response update(Shipping shipping, HttpSession session){
         User user=(User)session.getAttribute(Const.CURRENT_USER);
         if (user==null){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return shippingService.update(user.getId(), shipping);
@@ -52,6 +59,7 @@ public class ShippingController {
     public Response select(Integer shippingId, HttpSession session){
         User user=(User)session.getAttribute(Const.CURRENT_USER);
         if (user==null){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return shippingService.select(user.getId(), shippingId);
@@ -61,6 +69,7 @@ public class ShippingController {
     public Response list(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, HttpSession session){
         User user=(User)session.getAttribute(Const.CURRENT_USER);
         if (user==null){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return Response.createByError(ResponseCode.NEED_LOGIN);
         }
         return shippingService.list(user.getId(), pageNum, pageSize);

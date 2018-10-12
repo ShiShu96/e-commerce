@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -17,6 +18,9 @@ public class BackendUserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @RequestMapping(value = "/login/")
     public Response<User> login(String username, String password, HttpSession session){
@@ -28,6 +32,8 @@ public class BackendUserController {
             } else {
                 return Response.createByError(ResponseCode.NOT_AUTHORIZED);
             }
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         return response;
