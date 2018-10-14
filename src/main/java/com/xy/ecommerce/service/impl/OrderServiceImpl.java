@@ -4,6 +4,7 @@ import com.xy.ecommerce.common.Const;
 import com.xy.ecommerce.common.Response;
 import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.dao.*;
+import com.xy.ecommerce.dao.cache.ProductCacheDao;
 import com.xy.ecommerce.entity.*;
 import com.xy.ecommerce.service.OrderService;
 import com.xy.ecommerce.util.BigDecimalUtil;
@@ -12,6 +13,8 @@ import com.xy.ecommerce.util.PropertiesUtil;
 import com.xy.ecommerce.vo.OrderItemVo;
 import com.xy.ecommerce.vo.OrderVo;
 import com.xy.ecommerce.vo.ShippingVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ import java.util.Random;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static Logger logger=LoggerFactory.getLogger(OrderServiceImpl.class);
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -35,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
     private CartMapper cartMapper;
     @Autowired
     private ShippingMapper shippingMapper;
+
+
+    private ProductCacheDao productCacheDao=new ProductCacheDao();
 
     @Override
     @Transactional
@@ -86,11 +93,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         try{
-            Order upddateOrder=new Order();
-            upddateOrder.setId(order.getId());
-            upddateOrder.setStatus(Const.ORDER_CANCELLED);
+            Order updateOrder=new Order();
+            updateOrder.setId(order.getId());
+            updateOrder.setStatus(Const.ORDER_CANCELLED);
 
-            int count=orderMapper.updateByPrimaryKeySelective(upddateOrder);
+            int count=orderMapper.updateByPrimaryKeySelective(updateOrder);
             if (count<=0){
                 throw new Exception();
             }
@@ -99,13 +106,26 @@ public class OrderServiceImpl implements OrderService {
             for (OrderItem item:orderItemList){
                 Product product=productMapper.selectByPrimaryKey(item.getProductId());
                 product.setStock(product.getStock()+item.getQuantity());
-                productMapper.updateByPrimaryKeySelective(product);
+                updateProductStock(product);
             }
         } catch (Exception e){
             return Response.createByError(ResponseCode.DATABASE_ERROR);
         }
 
         return Response.createBySuccess();
+    }
+
+    private void updateProductStock(Product product){
+        productCacheDao.deleteProduct(product.getId());
+        int updateResult = productMapper.updateByPrimaryKeySelective(product);
+        if (updateResult>0){
+            try{
+                Thread.sleep(300);
+                productCacheDao.putProduct(product);
+            } catch (InterruptedException e){
+                logger.error(e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -195,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
             if (product.getStock()<0){
                 throw new Exception();
             }
-            productMapper.updateByPrimaryKeySelective(product);
+            updateProductStock(product);
         }
     }
 

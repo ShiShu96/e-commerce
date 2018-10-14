@@ -7,35 +7,43 @@ import com.xy.ecommerce.common.Response;
 import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.dao.CategoryMapper;
 import com.xy.ecommerce.dao.ProductMapper;
+import com.xy.ecommerce.dao.cache.ProductCacheDao;
 import com.xy.ecommerce.entity.Category;
 import com.xy.ecommerce.entity.Product;
 import com.xy.ecommerce.service.ProductService;
 import com.xy.ecommerce.util.DatetimeUtil;
-import com.xy.ecommerce.util.PropertiesUtil;
 import com.xy.ecommerce.vo.ProductDetailVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static Logger logger=LoggerFactory.getLogger(ProductServiceImpl.class);
     @Autowired
     private ProductMapper productMapper;
 
     @Autowired
     private CategoryMapper categoryMapper;
 
+    private ProductCacheDao productCacheDao=new ProductCacheDao();
+
     @Override
     public Response saveOrUpdateProduct(Product product){
         if(product!=null){
             // update
             if (product.getId()!=null){
-                int count=productMapper.updateByPrimaryKey(product);
-                if (count>0)
+                // double deletion + delay to guarantee database and cache consistence
+                boolean result=updateProduct(product);
+                if (result)
                     return Response.createBySuccess();
                 return Response.createByError();
             } else {
@@ -58,23 +66,47 @@ public class ProductServiceImpl implements ProductService {
         Product product=new Product();
         product.setId(productId);
         product.setStatus(status);
-        int count=productMapper.updateByPrimaryKeySelective(product);
-        if (count>0){
+        boolean result=updateProduct(product);
+        if (result)
             return Response.createBySuccess();
-        }
-
         return Response.createByError();
     }
 
+    private boolean updateProduct(Product product){
+        productCacheDao.deleteProduct(product.getId());
+        int count=productMapper.updateByPrimaryKeySelective(product);
+        if (count>0){
+            try {
+                Thread.sleep(300);
+                productCacheDao.putProduct(product);
+            } catch (InterruptedException e){
+                logger.error(e.getMessage());
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
-    public Response<ProductDetailVo> getProductDetail(Integer productId){
+    public Response<ProductDetailVo> getProductDetail(Integer productId, boolean isAdminOpt){
         if (productId==null){
             return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
         }
-        Product product=productMapper.selectByPrimaryKey(productId);
+        // read from redis
+        Product product=productCacheDao.getProduct(productId);
         if (product==null){
-            return Response.createByError(ResponseCode.PRODUCT_NOT_FOUND);
+            // not found in redis, read from database
+            product=productMapper.selectByPrimaryKey(productId);
+            if (product==null){
+                return Response.createByError(ResponseCode.PRODUCT_NOT_FOUND);
+            } else {
+                // put in redis
+                productCacheDao.putProduct(product);
+            }
         }
+        if (!isAdminOpt)
+            productCacheDao.increaseProductViews(productId);
+
         if (product.getStatus() != Const.PRODUCT_STATUS_SELLING){
             return Response.createByError(ResponseCode.PRODUCT_SOLD_OUT_OR_DELETED);
         }
@@ -111,6 +143,18 @@ public class ProductServiceImpl implements ProductService {
         return Response.createBySuccess(list);
     }
 
+    public Response<List<Map<String, Integer>>> getRankList(){
+        List<Map<String, Integer>> rankList=productCacheDao.productRankList();
+        return Response.createBySuccess(rankList);
+    }
+
+    public Response<Integer> getRank(Integer productId){
+        if (productId==null){
+            return Response.createByError(ResponseCode.ILLEGAL_ARGUMENT);
+        }
+        int rank=productCacheDao.productRank(productId);
+        return Response.createBySuccess(rank);
+    }
 
     private ProductDetailVo assembleProductDetailVo(Product product){
         ProductDetailVo productDetailVo = new ProductDetailVo();

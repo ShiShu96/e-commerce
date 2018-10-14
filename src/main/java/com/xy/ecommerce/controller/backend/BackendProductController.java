@@ -77,7 +77,7 @@ public class BackendProductController {
             httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return Response.createByError(ResponseCode.NOT_AUTHORIZED);
         }
-        return productService.getProductDetail(productId);
+        return productService.getProductDetail(productId, true);
     }
 
     @RequestMapping(value = "list.do", method = RequestMethod.GET)
