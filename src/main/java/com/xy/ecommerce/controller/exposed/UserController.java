@@ -6,6 +6,7 @@ import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.entity.User;
 import com.xy.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,13 @@ public class UserController {
 
     @Autowired
     private HttpServletResponse httpServletResponse;
+
+    @Value("${server.port}")
+    private String port;
+    @RequestMapping(value = "welcome.do", method = RequestMethod.GET)
+    public String welcome(){
+        return "welcome from port :"+port;
+    }
 
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     public Response<User> login(String username, String password, HttpSession httpSession){

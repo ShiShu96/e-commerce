@@ -2,13 +2,9 @@ package com.xy.ecommerce.dao.cache;
 
 import com.xy.ecommerce.dao.ProductMapper;
 import com.xy.ecommerce.entity.Product;
-import com.xy.ecommerce.vo.ProductDetailVo;
-import org.apache.ibatis.annotations.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import com.dyuproject.protostuff.LinkedBuffer;
