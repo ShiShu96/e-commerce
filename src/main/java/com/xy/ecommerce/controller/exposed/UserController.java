@@ -6,13 +6,15 @@ import com.xy.ecommerce.common.ResponseCode;
 import com.xy.ecommerce.entity.User;
 import com.xy.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user/")
@@ -24,11 +26,14 @@ public class UserController {
     @Autowired
     private HttpServletResponse httpServletResponse;
 
-    @Value("${server.port}")
-    private String port;
+
     @RequestMapping(value = "welcome.do", method = RequestMethod.GET)
-    public String welcome(){
-        return "welcome from port :"+port;
+    public Map<String, String> welcome(HttpServletRequest request){
+        Map<String, String> map=new HashMap<>();
+        HttpSession session=request.getSession();
+        map.put("id", session.getId());
+        map.put("value", String.valueOf(request.getLocalPort()));
+        return map;
     }
 
     @RequestMapping(value = "login.do", method = RequestMethod.POST)

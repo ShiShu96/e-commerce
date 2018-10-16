@@ -5,6 +5,7 @@ import com.xy.ecommerce.entity.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import com.dyuproject.protostuff.LinkedBuffer;
@@ -12,10 +13,12 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import redis.clients.jedis.Tuple;
 
+
+
+
 import java.util.*;
 
 public class ProductCacheDao {
-
     @Autowired
     private ProductMapper mapper;
 
